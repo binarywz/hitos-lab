@@ -21,15 +21,24 @@ _start:
     mov sp,#0xFF00
 
 ! Get Params
+    ! 读取光标位置
     mov ax,#INITSEG
+    ! 设置 ds = 09000
     mov ds,ax
     mov ah,#0x03
+    ! 读入光标位置
     xor bh,bh
+    ! 调用0x10中断
     int 0x10
+    ! 将光标位置写入0x90000
     mov [0],dx
+
+    ! 读取内存大小
     mov ah,#0x88
     int 0x15
     mov [2],ax
+
+    ! 从0x41处拷贝16个字节(磁盘参数表)
     mov ax,#0x0000
     mov ds,ax
     lds si,[4*0x41]
@@ -37,6 +46,7 @@ _start:
     mov es,ax
     mov di,#0x0004
     mov cx,#0x10
+    ! 重复16次
     rep
     movsb
 
